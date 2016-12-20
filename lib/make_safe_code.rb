@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-MAKE_SAFE_CODE = <<-SAFE_CODE
+MAKE_SAFE_CODE = <<-RUBY
 def keep_singleton_methods(klass, singleton_methods)
   klass = Object.const_get(klass)
   singleton_methods = singleton_methods.map(&:to_sym)
@@ -50,4 +50,4 @@ end
 
 clean_constants
 
-SAFE_CODE
+RUBY
