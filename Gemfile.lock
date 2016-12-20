@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    safe_ruby (1.0.2)
+    safe_ruby (1.0.3)
       childprocess (>= 0.3.9)
 
 GEM

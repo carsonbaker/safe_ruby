@@ -5,8 +5,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |s|
   s.name        = 'safe_ruby'
-  s.version     = '1.0.2'
-  s.date        = '2013-12-04'
+  s.version     = '1.0.3'
+  s.date        = '2016-12-20'
   s.summary     = 'Run untrusted ruby code in a safe environment'
   s.description = <<~EOL
     Evaluates ruby code by writing it to a tempfile and spawning a child process.

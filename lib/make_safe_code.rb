@@ -9,13 +9,13 @@ def keep_singleton_methods(klass, singleton_methods)
   undef_methods.each do |method|
     klass.singleton_class.send(:undef_method, method)
   end
-
 end
 
 def keep_methods(klass, methods)
   klass = Object.const_get(klass)
   methods = methods.map(&:to_sym)
   undef_methods = (klass.methods(false) - methods)
+
   undef_methods.each do |method|
     klass.send(:undef_method, method)
   end
@@ -38,6 +38,7 @@ keep_methods(:TrueClass, #{TRUECLASS_METHODS})
 keep_methods(:FalseClass, #{FALSECLASS_METHODS})
 keep_methods(:Enumerable, #{ENUMERABLE_METHODS})
 keep_methods(:String, #{STRING_METHODS})
+
 Kernel.class_eval do
  def `(*args)
    raise NoMethodError, "` is unavailable"
@@ -49,5 +50,4 @@ Kernel.class_eval do
 end
 
 clean_constants
-
 RUBY
