@@ -10,7 +10,7 @@ class SafeRuby
     raise_errors: true
   }.freeze
 
-  def self.eval(code, options = {})
+  def self.eval(code, **options)
     new(code, options).eval
   end
 
@@ -18,8 +18,8 @@ class SafeRuby
     eval(code) == eval(expected)
   end
 
-  def initialize(code, options = {})
-    raise ArgumentError, 'No code to evaluate.' unless code
+  def initialize(code, **options)
+    raise ArgumentError, 'No code to evaluate.' if code.nil?
 
     options = DEFAULTS.merge(options)
 
@@ -29,47 +29,50 @@ class SafeRuby
   end
 
   def eval
-    temp = build_tempfile
-    read, write = IO.pipe
-
-    ChildProcess.build('ruby', temp.path).tap do |process|
-      process.io.stdout = write
-      process.io.stderr = write
-      process.start
-      begin
-        process.poll_for_exit(@timeout)
-      rescue ChildProcess::TimeoutError => e
-        process.stop # tries increasingly harsher methods to kill the process.
-        raise e
-      ensure
-        write.close
-        temp.unlink
-      end
-    end
-
-    data = read.read
-
-    begin
-      Marshal.load(data)
-    rescue
-      raise data if raise_errors?
-    ensure
-      read.close
-    end
-
+    tmpfile = build_tempfile
+    data = eval_file(tmpfile)
+    Marshal.load(data)
+  rescue ChildProcess::TimeoutError => e
+    raise EvalError, e.message if raise_errors?
+    e.message
+  rescue
+    raise EvalError, data if raise_errors?
     data
+  ensure
+    tmpfile.unlink
   end
 
   private
 
+  def eval_file(tempfile)
+    IO.pipe do |r_pipe, w_pipe|
+      ChildProcess.build('ruby', tempfile.path).tap do |process|
+        process.io.stdout = w_pipe
+        process.io.stderr = w_pipe
+        process.start
+
+        begin
+          process.poll_for_exit(@timeout)
+        rescue ChildProcess::TimeoutError => e
+          process.stop # tries increasingly harsher methods to kill the process.
+          raise e
+        ensure
+          w_pipe.close
+        end
+      end
+
+      r_pipe.read
+    end
+  end
+
   def build_tempfile
-    file = Tempfile.new('saferuby')
+    file = Tempfile.new(%w(saferuby .rb))
     file.write(MAKE_SAFE_CODE)
 
-    file.write <<-STRING
+    file.write <<~RUBY
       result = eval(%q(#{@code}))
       print Marshal.dump(result)
-    STRING
+    RUBY
 
     file.rewind
     file
