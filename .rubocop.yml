@@ -1,0 +1,26 @@
+AllCops:
+  TargetRubyVersion: 2.3
+
+Lint/Eval:
+  Exclude:
+    - 'lib/safe_ruby_runner.rb'
+
+Lint/RescueException:
+  Exclude:
+    - 'lib/safe_ruby_runner.rb'
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/AbcSize:
+  Exclude:
+    - 'lib/safe_ruby_runner.rb'
+
+
+Metrics/LineLength:
+  Exclude:
+    - 'spec/safe_ruby_spec.rb'
+
+Metrics/MethodLength:
+  Exclude:
+    - 'lib/safe_ruby_runner.rb'

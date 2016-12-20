@@ -1,4 +1,6 @@
-MAKE_SAFE_CODE = <<-STRING
+# frozen_string_literal: true
+
+MAKE_SAFE_CODE = <<-SAFE_CODE
 def keep_singleton_methods(klass, singleton_methods)
   klass = Object.const_get(klass)
   singleton_methods = singleton_methods.map(&:to_sym)
@@ -16,7 +18,7 @@ def keep_methods(klass, methods)
   undef_methods = (klass.methods(false) - methods)
   undef_methods.each do |method|
     klass.send(:undef_method, method)
-  end  
+  end
 end
 
 def clean_constants
@@ -48,4 +50,4 @@ end
 
 clean_constants
 
-STRING
+SAFE_CODE
