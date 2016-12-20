@@ -1,0 +1,20 @@
+# for the sake of sanity
+
+# topmost editorconfig file
+root = true
+
+# always use Unix-style newlines,
+# use 2 spaces for indentation
+# and encode files with UTF-8
+[*]
+indent_style = space
+end_of_line = lf
+charset = utf-8
+
+[*.rb]
+indent_size = 2
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.yml]
+indent_size = 2
